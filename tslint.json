@@ -1,0 +1,52 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:latest"
+  ],
+  "jsRules": {},
+  "rules": {
+    "no-console": [
+      false
+    ],
+    "semicolon": [
+      false,
+      "always"
+    ],
+    "quotemark": [
+      "single",
+      true
+    ],
+    "adjacent-overload-signatures": true,
+    "use-isnan": true,
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
+    "class-name": true,
+    "prefer-for-of": true,
+    "trailing-comma": [
+      false
+    ],
+    "object-literal-shorthand": true,
+    "cyclomatic-complexity": [
+      true
+    ],
+    "eofline": true,
+    "indent": [
+      true
+    ],
+    "member-ordering": [
+      true
+    ],
+    "new-parens": true,
+    "object-literal-key-quotes": [
+      "consistent-as-needed",
+      true
+    ],
+    "ordered-imports": [
+      true
+    ],
+    "switch-default": true
+  },
+  "rulesDirectory": []
+}
