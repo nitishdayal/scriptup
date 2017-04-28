@@ -4,8 +4,7 @@
   "description": "Script modification via the command line, simplified.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jasmine ./spec/index.js",
-    "start": "nodemon -w ./dist ./dist/index.js"
+    "test": "jasmine ./spec/index.js"
   },
   "keywords": [
     "package.json",

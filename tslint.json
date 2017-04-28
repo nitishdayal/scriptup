@@ -46,7 +46,10 @@
     "ordered-imports": [
       true
     ],
-    "switch-default": true
+    "switch-default": true,
+    "whitespace": [
+      true
+    ]
   },
   "rulesDirectory": []
 }

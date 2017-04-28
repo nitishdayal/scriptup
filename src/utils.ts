@@ -3,15 +3,15 @@ import fs = require('fs');
 import path = require('path');
 
 const errMsg =
-  (msg: string, { exit } = process) =>
-    console.error(fmt(['ERORR:', `${msg}`], true)) && exit(1)
+  (msg: string) =>
+    console.error(fmt(['ERROR:', `${msg}`], true)) && process.exit(0)
 
 const fmt = ([title, ...msg]: string[], err = false) => {
   switch (err) {
     case true:
-      return ch.inverse((ch.bold.red(title) + ch.white(...msg)))
+      return ch.bold.bgRed(title) + ch.red(...msg)
     default:
-      return (ch.bold.bgBlue.white(title) + ch.inverse.green(...msg))
+      return (ch.bold.bgBlue.white(title) + ch.green(...msg))
   }
 }
 const validMsg = (msg: string) => console.info(fmt(['Success!', `${msg}`]))
