@@ -63,7 +63,3 @@ typings/
 
 
 # End of https://www.gitignore.io/api/node
-dist/command.js.map
-dist/index.js.map
-dist/interactive.js.map
-dist/utils.js.map

@@ -43,12 +43,16 @@
       "consistent-as-needed",
       true
     ],
+    "interface-name": [
+      "never-prefix",
+      true
+    ],
     "ordered-imports": [
       true
     ],
     "switch-default": true,
-    "whitespace": [
-      true
+    "no-consecutive-blank-lines": [
+      false
     ]
   },
   "rulesDirectory": []
