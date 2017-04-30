@@ -2,45 +2,35 @@ import ch = require('chalk');
 import fs = require('fs');
 import path = require('path');
 
-import { msgOpts } from './constants'
+import { cmdOpts, msgOpts } from './constants'
 
-const stringify = (p: JSON) => JSON.stringify(p, null, 2)
 
-const errMsg =
-  (msg: string) =>
-    console.error(fmtStr(['ERROR:', `${msg}`], true));
+const makeJSON = (p: JSON) => JSON.stringify(p, null, 2);
 
-const fmtStr = ([title, ...msg]: string[], err = false) => {
-  switch (err) {
-    case true:
-      return ch.bold.bgRed(title) + ch.red(...msg)
-    default:
-      return (ch.bold.bgBlue.white(title) + ch.green(...msg))
-  }
-}
-const validMsg = (msg: string) => console.info(fmtStr(['Success!', `${msg}`]))
+const validMsg = (msg: string) => console.info(fmtStr(['Success!', `${msg}`]));
 
-const getPckg = async (p: string) => {
-  const pckgJson = await fs.readFileSync(path.resolve(p), 'utf-8')
-  return pckgJson
-}
+const errMsg = (msg: string) => console.error(fmtStr(['ERROR:', ` `, `${msg}`], true));
 
-const writeFileCB = ((e: Error, sPath: string, cmdName: string) => {
+const fmtStr = ([title, ...msg]: string[], err = false) =>
+  err ? ch.bold.bgRed(title) + ch.red(...msg) : (ch.bold.bgBlue.white(title) + ch.green(...msg));
+
+const getPckg = async (p: string) => await fs.readFileSync(path.resolve(p), 'utf-8')
+
+const writeFileCB = ((e: Error, sPath: string, cmdName: string[], del?: boolean) => {
   if (e) {
     errMsg(e.message);
     process.exitCode = 1
   } else {
-    validMsg(msgOpts.SUCCESS(sPath, cmdName));
+    process.exitCode = 0;
+    return del ? validMsg(msgOpts.DEL_SUCCESS(sPath, cmdName)) :
+      validMsg(msgOpts.ADD_SUCCESS(sPath, cmdName));
   }
 })
 
 export {
   errMsg,
   getPckg,
-  msgOpts,
-  stringify,
+  makeJSON,
   validMsg,
   writeFileCB as wrCb
 }
-
-export { cmdOpts } from './constants'

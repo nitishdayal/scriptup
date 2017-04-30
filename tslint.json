@@ -53,7 +53,8 @@
     "switch-default": true,
     "no-consecutive-blank-lines": [
       false
-    ]
+    ],
+    "no-shadowed-variable": false
   },
   "rulesDirectory": []
 }
