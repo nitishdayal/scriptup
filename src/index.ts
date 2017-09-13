@@ -49,12 +49,12 @@ sup
   .option(
     '-p, --path <p>',
     cmdOpts.PATH,
-    p => path.resolve(p, 'package.json'),
+    (p) => path.resolve(p, 'package.json'),
     path.resolve('package.json')
   )
   .option('-e, --pre [cmd]', cmdOpts.PRE)
   .action(
-    cmd =>
+    (cmd) =>
       sup.pre &&
       scriptObjs.push({
         cmd: sup.args[0] ? sup.pre : cmd,
@@ -63,15 +63,15 @@ sup
   )
   .option('-o, --post [cmd]', cmdOpts.POST)
   .action(
-    cmd =>
+    (cmd) =>
       sup.post &&
       scriptObjs.push({
         cmd: sup.args[0] ? sup.post : cmd,
         cmdName: `post${sup.args[0] || sup.post}`
       })
   )
-  .option('-r, --remove [cmds]', cmdOpts.REMOVE, cmd =>
-    getPkg(sup.path).then(v => {
+  .option('-r, --remove [cmds]', cmdOpts.REMOVE, (cmd) =>
+    getPkg(sup.path).then((v) => {
       let pckgFile = JSON.parse(v);
       const { scripts } = pckgFile;
 
@@ -83,7 +83,7 @@ sup
 
       pckgFile = makeJSON({ ...pckgFile, scripts });
 
-      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, e =>
+      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, (e) =>
         wrCb(e, sup.path.toString(), cmd, true)
       );
     })
@@ -92,7 +92,7 @@ sup
     scriptObjs =
       (cmd && cmdName && [...scriptObjs, { cmd, cmdName }]) || scriptObjs;
 
-    getPkg(sup.path).then(v => {
+    getPkg(sup.path).then((v) => {
       let pckgFile = JSON.parse(v);
       let { scripts } = pckgFile;
 
@@ -100,8 +100,8 @@ sup
         scripts = { ...scripts, [cmdName]: cmd };
       });
       pckgFile = makeJSON({ ...pckgFile, scripts });
-      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, e =>
-        wrCb(e, sup.path.toString(), scriptObjs.map(scr => scr.cmdName))
+      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, (e) =>
+        wrCb(e, sup.path.toString(), scriptObjs.map((scr) => scr.cmdName))
       );
     });
   })

@@ -2,12 +2,14 @@
   "author":
     "Nitish Dayal <contact@nitishdayal.me> (http://github.com/nitishdayal)",
   "name": "scriptup",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "description": "Script modification via the command line, simplified.",
   "main": "dist/index.js",
   "scripts": {
     "postbuild": "node dist/index.js"
   },
+  "url": "https://github.com/nitishdayal/scriptup/issues",
+  "email": "contact@nitishdayal.me",
   "keywords": [
     "package.json",
     "add",
@@ -18,6 +20,10 @@
     "command",
     "line"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nitishdayal/scriptup.git"
+  },
   "license": "MIT",
   "bin": {
     "scriptup": "./dist/index.js",
@@ -26,8 +32,6 @@
   "dependencies": {
     "chalk": "^1.1.3",
     "commander": "^2.11.0",
-    "progress": "^2.0.0",
-    "semver": "^5.4.1",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
