@@ -1,134 +1,118 @@
 #!/usr/bin/env node --harmony
-import sup = require('commander');
-import path = require('path');
-import fs = require('fs');
-import ch = require('chalk');
+import * as ch from 'chalk';
+import * as sup from 'commander';
+import * as fs from 'fs';
+import * as path from 'path';
 
-import {
-  errMsg,
-  getPckg,
-  makeJSON,
-  validMsg,
-  wrCb
-} from './utils'
+import { errMsg, getPkg, makeJSON, validMsg, wrCb } from './utils';
 
-import { cmdOpts, msgOpts } from './utils/constants'
+import { cmdOpts, msgOpts } from './utils/constants';
 
+// tslint:disable
+/**
+ * Main command: sup <script_name> [options] [cmds...]
+ *
+ * Examples:
+ *
+ * Create a set of NPM scripts [
+ *  'prebuild',
+ *  'build',
+ *  'postbuild'
+ * ]
+ *    to
+ * [
+ *  'remove the existing folder `./dist` if there is one',
+ *  'run webpack using a config file at path `webpack.config.js`',
+ *  'run the file at path `dist/index.js` w/ node'
+ * ]:
+ *      sup build 'webpack --config webpack.config.js' -e 'rm -rf ./dist' -o 'node dist/index.js'
+ *
+ * HOW NICE IS THAT. C'mon. It's nice. _C'mon._
+ *
+*/
+// tslint:enable
+// tslint:disable-next-line:class-name
+interface scriptObj {
+  cmd: string;
+  cmdName: string;
+}
 
-sup.version('0.0.1')
-  .usage('<script_name> [cmd...] [options]')
+const scriptsToDelete: string[] = [];
+
+let scriptObjs: scriptObj[] = [];
+
+const addPre = (val, ...rest) => console.log(val, rest);
+sup
+  .version('0.0.1')
+  .usage('<script_name> <cmd> [option] [cmd]')
   .arguments('<script_name> [cmd]')
-  .option('-o, --post [post]', cmdOpts.POST)
-  .option('-e, --pre [pre]', cmdOpts.PRE)
   .option(
-  '-p, --path <p>', cmdOpts.PATH,
-  (p) => path.resolve(p, 'package.json'),
-  path.resolve('package.json')
+    '-p, --path <p>',
+    cmdOpts.PATH,
+    p => path.resolve(p, 'package.json'),
+    path.resolve('package.json')
   )
-  .option('-r --remove', cmdOpts.REMOVE)
-  .option('-f, --force', cmdOpts.FORCE)
-  .action((cmdName: string, cmd: string) => {
-
-    const { path: sPath, pre, post, force, remove } = sup;
-    let nScripts = [{ cmdName, cmd }];
-
-    getPckg(sPath)
-      .then((v: string) => {
-
-        const pckgFile = JSON.parse(v);
-        const scripts = Object.values(pckgFile.scripts)
-        const scriptArr = Object.keys(pckgFile.scripts)
-
-        if (remove) {
-
-          const err: string[] = []
-          const delArgs = sup.args[2].rawArgs.splice(3);
-
-          delArgs.forEach((arg) => {
-            if (scriptArr.indexOf(arg) < 0) {
-              err.push(msgOpts.DEL_ERR(sPath, arg, scriptArr))
-            }
-          })
-
-          if (err.length > 0) {
-            err.forEach((e) => errMsg(e));
-            return process.exitCode = 1;
-          }
-
-          delArgs.forEach((cmd) => {
-            try {
-              delete pckgFile.scripts[cmd]
-            } catch (e) {
-              return errMsg(e)
-            }
-          })
-
-          return fs.writeFile(
-            sPath,
-            makeJSON(pckgFile),
-            { encoding: 'utf-8' },
-            (e) => wrCb(e, sPath.toString(), delArgs, remove)
-          )
-        }
-
-        if (pre) {
-
-          const preCmd = `pre${cmdName}`
-
-          if (pre === true) {
-
-            if (!post) {
-              nScripts[0].cmdName = preCmd;
-            } else {
-              return errMsg(msgOpts.PRE_POST(preCmd));
-            }
-          } else {
-
-            nScripts.push({
-              cmd: pre,
-              cmdName: preCmd
-            });
-
-          }
-        }
-
-        if (post) {
-          const pstCmd = `post${cmdName}`
-          if (post === true) {
-            nScripts[0].cmdName = pstCmd;
-          } else {
-            nScripts.push({
-              cmd: post,
-              cmdName: pstCmd
-            })
-          }
-        }
-
-        if (!force === true) {
-
-          if (scriptArr.indexOf(cmdName) > 0) {
-            return errMsg(msgOpts.SCRIPT_EXISTS(cmdName, sPath));
-          } else if (scripts.indexOf(cmd) > 0) {
-            return errMsg(msgOpts.CMD_EXISTS(scriptArr[scripts.indexOf(cmd)]))
-          }
-        }
-
-        nScripts = nScripts.length < 2 ? nScripts : nScripts.slice(1)
-
-        nScripts.forEach(({ cmd, cmdName }) => {
-          pckgFile.scripts[cmdName] = cmd
-        })
-
-        console.log(nScripts);
-
-        fs.writeFile(
-          sPath,
-          makeJSON(pckgFile),
-          { encoding: 'utf-8' },
-          (e) => wrCb(e, sPath.toString(), nScripts.map((scr) => scr.cmdName))
-        )
-
+  .option('-e, --pre [cmd]', cmdOpts.PRE)
+  .action(
+    cmd =>
+      sup.pre &&
+      scriptObjs.push({
+        cmd: sup.args[0] ? sup.pre : cmd,
+        cmdName: `pre${sup.args[0] || sup.pre}`
       })
-      .catch((e: any) => errMsg(e));
+  )
+  .option('-o, --post [cmd]', cmdOpts.POST)
+  .action(
+    cmd =>
+      sup.post &&
+      scriptObjs.push({
+        cmd: sup.args[0] ? sup.post : cmd,
+        cmdName: `post${sup.args[0] || sup.post}`
+      })
+  )
+  .option('-r, --remove [cmds]', cmdOpts.REMOVE, cmd =>
+    getPkg(sup.path).then(v => {
+      let pckgFile = JSON.parse(v);
+      const { scripts } = pckgFile;
+
+      try {
+        delete scripts[cmd];
+      } catch (e) {
+        return errMsg(e);
+      }
+
+      pckgFile = makeJSON({ ...pckgFile, scripts });
+
+      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, e =>
+        wrCb(e, sup.path.toString(), cmd, true)
+      );
+    })
+  )
+  .action((cmdName, cmd) => {
+    scriptObjs =
+      (cmd && cmdName && [...scriptObjs, { cmd, cmdName }]) || scriptObjs;
+
+    getPkg(sup.path).then(v => {
+      let pckgFile = JSON.parse(v);
+      let { scripts } = pckgFile;
+
+      scriptObjs.forEach(({ cmd, cmdName }) => {
+        scripts = { ...scripts, [cmdName]: cmd };
+      });
+      pckgFile = makeJSON({ ...pckgFile, scripts });
+      fs.writeFile(sup.path, pckgFile, { encoding: 'utf-8' }, e =>
+        wrCb(e, sup.path.toString(), scriptObjs.map(scr => scr.cmdName))
+      );
+    });
   })
+  .on('--help', () =>
+    console.log(
+      ch.bgRed(
+        ch.bold(
+          '\n' +
+            `IF YOU PASS ARGUMENTS IN AN UNEXPECTED ORDER, I WILL BREAK YOUR PACKAGE.JSON :)`
+        )
+      )
+    )
+  )
   .parse(process.argv);

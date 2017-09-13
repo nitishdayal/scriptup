@@ -1,10 +1,10 @@
-import ch = require('chalk')
+import * as ch from 'chalk';
 
 const msgOpts = {
   ADD_SUCCESS: (path: string, cmdName: string[]) => `
 Updated package.json at ${ch.cyan(path)} to include script/s:
 
- '${cmdName.toString().replace(/,/, `', '`)}'`,
+ '${cmdName.toString().replace(/,/g, `', '`)}'`,
   CMD_EXISTS: (cmdName: string) => `
 This script already exists under the command name:
 
@@ -20,7 +20,7 @@ Could not find '${cmdName}' in ${ch.cyan(path)}. Here are the scripts I found:
   DEL_SUCCESS: (path: string, cmdName: string[]) => `
 Updated package.json at ${ch.cyan(path)} and removed script/s:
 
- '${cmdName.toString().replace(/,/, `', '`)}'`,
+ '${cmdName.toString().replace(/,/g, `', '`)}'`,
 
   PRE_POST: (cmdName: string) => `
 Cannot provide both ${ch.inverse.blue('pre')} and ${ch.inverse.magenta('post')}
