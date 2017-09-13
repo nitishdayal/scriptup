@@ -32,3 +32,9 @@ Examples:
 ```
 
   `sup build 'webpack --config webpack.config.js' -e 'rm -rf ./dist' -o 'node dist/index.js'`
+
+```javascript
+// Remove a script 'build'
+```
+
+  `sup -r build`
