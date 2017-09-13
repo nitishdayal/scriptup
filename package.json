@@ -2,7 +2,7 @@
   "author":
     "Nitish Dayal <contact@nitishdayal.me> (http://github.com/nitishdayal)",
   "name": "scriptup",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Script modification via the command line, simplified.",
   "main": "dist/index.js",
   "scripts": {

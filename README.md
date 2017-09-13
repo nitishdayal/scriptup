@@ -9,7 +9,7 @@ Examples:
 // Create a script 'start' which runs index.js w/ node
 ```
 
-  `sup addscript start 'node index.js'`
+  `sup start 'node index.js'`
 
 ```javascript
 // Create a set of NPM scripts
